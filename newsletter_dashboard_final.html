@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Newsletter de Inovação</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --accent: #9b59b6;
+            --background: #f8f9fa;
+            --card: #ffffff;
+            --text: #333333;
+            --light-text: #7f8c8d;
+            --border: #e0e0e0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+        }
+        
+        select {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background-color: var(--card);
+            color: var(--text);
+        }
+        
+        .card {
+            background-color: var(--card);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .metric-card {
+            background-color: var(--card);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: var(--light-text);
+        }
+        
+        .trend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .trend-up {
+            color: var(--secondary);
+        }
+        
+        .trend-down {
+            color: #e74c3c;
+        }
+        
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .insights-list {
+            list-style-type: none;
+        }
+        
+        .insights-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+        }
+        
+        .insights-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .insights-list .icon {
+            margin-right: 12px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .insights-list .growth {
+            background-color: var(--secondary);
+        }
+        
+        .insights-list .alert {
+            background-color: #e74c3c;
+        }
+        
+        .insights-list .info {
+            background-color: var(--accent);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            font-weight: 600;
+            color: var(--light-text);
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .engagement-score {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 0%, var(--primary) 76%, #e0e0e0 76%, #e0e0e0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .score-circle::before {
+            content: "";
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background-color: var(--card);
+            position: absolute;
+        }
+
+        .score-value {
+            position: relative;
+            font-size: 24px;
+            font-weight: 700;
+            z-index: 1;
+        }
+
+        .score-label {
+            font-size: 14px;
+            color: var(--light-text);
+        }
+
+        /* Classes para a comparação de edições */
+        .comparison-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        
+        .comparison-card {
+            flex: 1;
+            background-color: var(--card);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .comparison-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .comparison-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .comparison-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 5px;
+        }
+        
+        .comparison-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        
+        /* Adição de novas classes para melhorar responsividade */
+        @media (max-width: 992px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .comparison-container {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+        
+        /* Adição de estilos para destaque */
+        .highlight-value {
+            color: var(--primary);
+            font-weight: 700;
+        }
+        
+        .summary-card {
+            background-color: rgba(52, 152, 219, 0.05);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .summary-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dashboard Newsletter de Inovação</h1>
+            <div class="controls">
+                <select id="edition-selector">
+                    <option value="all">Todas as edições</option>
+                    <option value="mai-2025" selected>Maio/2025</option>
+                    <option value="jun-2025">Junho/2025</option>
+                    <option value="jul-2025">Julho/2025</option>
+                    <option value="ago-2025">Agosto/2025</option>
+                    <option value="set-2025">Setembro/2025</option>
+                    <option value="out-2025">Outubro/2025</option>
+                    <option value="nov-2025">Novembro/2025</option>
+                    <option value="dez-2025">Dezembro/2025</option>
+                </select>
+            </div>
+        </header>
+
+        <div class="summary-card">
+            <div class="summary-title">Resumo da Edição - Maio/2025</div>
+            <p>A newsletter de Maio/2025 teve uma taxa de abertura de <span class="highlight-value">49,1%</span>, 
+               com <span class="highlight-value">131</span> cliques distribuídos entre <span class="highlight-value">22</span> links. 
+               A avaliação média foi de <span class="highlight-value">7,6/10</span>, com 
+               <span class="highlight-value">41,2%</span> dos usuários dando nota 10.</p>
+        </div>
+
+        <div class="grid">
+            <div class="metric-card">
+                <div class="metric-label">E-mails Enviados</div>
+                <div class="metric-value">2.122</div>
+                <div class="trend">Primeira edição</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Taxa de Abertura</div>
+                <div class="metric-value">49,1%</div>
+                <div class="trend">Primeira edição</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Taxa de Cliques</div>
+                <div class="metric-value">6,2%</div>
+                <div class="trend">Primeira edição</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Nota Média (1-10)</div>
+                <div class="metric-value">7,6</div>
+                <div class="trend">Primeira edição</div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Links Mais Clicados</div>
+                </div>
+                <table>
+                    <tr>
+                        <th>Link</th>
+                        <th>Cliques</th>
+                        <th>% do Total</th>
+                    </tr>
+                    <tr>
+                        <td>Acessar Fotos do Evento</td>
+                        <td>26</td>
+                        <td>19,8%</td>
+                    </tr>
+                    <tr>
+                        <td>Tinta que muda de cor (Fast Company)</td>
+                        <td>11</td>
+                        <td>8,4%</td>
+                    </tr>
+                    <tr>
+                        <td>Relatórios do SXSW 2025</td>
+                        <td>7</td>
+                        <td>5,3%</td>
+                    </tr>
+                    <tr>
+                        <td>Celulares na educação (CNN Brasil)</td>
+                        <td>6</td>
+                        <td>4,6%</td>
+                    </tr>
+                    <tr>
+                        <td>Creators Shein e Temu (The Verge)</td>
+                        <td>5</td>
+                        <td>3,8%</td>
+                    </tr>
+                    <tr>
+                        <td>Frontiers of Computing (Wired)</td>
+                        <td>4</td>
+                        <td>3,1%</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Distribuição de Interações</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="interactionsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Insights Automáticos</div>
+                </div>
+                <ul class="insights-list">
+                    <li>
+                        <div class="icon growth">↑</div>
+                        <span>O botão "Acessar Fotos do Evento" teve o maior número de cliques (26), indicando forte interesse em conteúdo visual.</span>
+                    </li>
+                    <li>
+                        <div class="icon info">i</div>
+                        <span>41,2% das avaliações foram nota 10, mostrando alta satisfação entre os usuários que avaliaram.</span>
+                    </li>
+                    <li>
+                        <div class="icon">↔</div>
+                        <span>As matérias sobre inovação em design (tinta que muda de cor) receberam 11 cliques, sugerindo interesse em conteúdos de tecnologia aplicada.</span>
+                    </li>
+                    <li>
+                        <div class="icon alert">!</div>
+                        <span>Apenas 9 de 34 pessoas (26,5%) que clicaram no termômetro preencheram o formulário completo, indicando possível barreira na coleta de feedback.</span>
+                    </li>
+                    <li>
+                        <div class="icon info">i</div>
+                        <span>Conteúdos relacionados a eventos (fotos e relatórios SXSW) somaram 33 cliques (25,2% do total), demonstrando alto engajamento com essa categoria.</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Distribuição de Avaliações</div>
+                </div>
+                <div style="display: flex; height: 100%;">
+                    <div style="flex: 1;">
+                        <div class="engagement-score">
+                            <div class="score-circle">
+                                <div class="score-value">7,6</div>
+                            </div>
+                            <div class="score-label">Nota Média</div>
+                        </div>
+                    </div>
+                    <div style="flex: 1.5;">
+                        <canvas id="ratingChart" style="height: 100%;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Conversão do Feedback</div>
+            </div>
+            <div class="comparison-container">
+                <div class="comparison-card">
+                    <div class="comparison-title">Termômetro de Avaliação</div>
+                    <div class="chart-container" style="height: 200px;">
+                        <canvas id="conversionChart"></canvas>
+                    </div>
+                    <div class="comparison-stats">
+                        <span>34 cliques no termômetro</span>
+                        <span>9 formulários preenchidos</span>
+                        <span>3 comentários verbalizados</span>
+                    </div>
+                </div>
+                <div class="comparison-card">
+                    <div class="comparison-title">Engajamento por Categoria</div>
+                    <div class="chart-container" style="height: 200px;">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                    <div class="comparison-stats">
+                        <span>Eventos: 33 cliques</span>
+                        <span>Tecnologia: 20 cliques</span>
+                        <span>Tendências: 12 cliques</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Evolução do Engajamento (por Edição)</div>
+            </div>
+            <div class="chart-container">
+                <canvas id="engagementTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados de exemplo para os gráficos
+        const months = ['Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+        
+        // Dados de tendência de engajamento por edição
+        const engagementTrendData = {
+            'all': {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Taxa de Abertura (%)',
+                        data: [49.1, 0, 0, 0, 0, 0, 0, 0],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Taxa de Cliques (%)',
+                        data: [6.2, 0, 0, 0, 0, 0, 0, 0],
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Nota Média',
+                        data: [7.6, 0, 0, 0, 0, 0, 0, 0],
+                        borderColor: '#9b59b6',
+                        backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            'mai-2025': {
+                labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
+                datasets: [
+                    {
+                        label: 'Taxa de Abertura (%)',
+                        data: [28, 12, 6, 3.1],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Taxa de Cliques (%)',
+                        data: [4.1, 1.5, 0.4, 0.2],
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            }
+        };
+
+        // Adicionar os meses vazios
+        ['jun-2025', 'jul-2025', 'ago-2025', 'set-2025', 'out-2025', 'nov-2025', 'dez-2025'].forEach(month => {
+            engagementTrendData[month] = {
+                labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
+                datasets: [
+                    {
+                        label: 'Taxa de Abertura (%)',
+                        data: [0, 0, 0, 0],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Taxa de Cliques (%)',
+                        data: [0, 0, 0, 0],
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            };
+        });
+
+        const interactionsData = {
+            'all': {
+                labels: ['Apenas Aberturas', 'Cliques em Links', 'Avaliações', 'Sem Interação'],
+                datasets: [{
+                    data: [877, 131, 34, 1080],
+                    backgroundColor: ['#3498db', '#2ecc71', '#9b59b6', '#e0e0e0']
+                }]
+            },
+            'mai-2025': {
+                labels: ['Apenas Aberturas', 'Cliques em Links', 'Avaliações', 'Sem Interação'],
+                datasets: [{
+                    data: [877, 131, 34, 1080],
+                    backgroundColor: ['#3498db', '#2ecc71', '#9b59b6', '#e0e0e0']
+                }]
+            }
+        };
+
+        // Adicionar os meses vazios
+        ['jun-2025', 'jul-2025', 'ago-2025', 'set-2025', 'out-2025', 'nov-2025', 'dez-2025'].forEach(month => {
+            interactionsData[month] = {
+                labels: ['Apenas Aberturas', 'Cliques em Links', 'Avaliações', 'Sem Interação'],
+                datasets: [{
+                    data: [0, 0, 0, 0],
+                    backgroundColor: ['#3498db', '#2ecc71', '#9b59b6', '#e0e0e0']
+                }]
+            };
+        });
+
+        // Configuração dos gráficos
+        let interactionsChart, ratingChart, conversionChart, categoryChart, engagementTrendChart;
+
+        // Função para atualizar o resumo da edição
+        function updateSummary(edition) {
+            // Dados de exemplo para o resumo
+            const summaryData = {
+                'all': {
+                    title: 'Resumo Geral',
+                    text: 'No total, a newsletter teve uma taxa de abertura de <span class="highlight-value">49,1%</span>, com <span class="highlight-value">131</span> cliques distribuídos entre <span class="highlight-value">22</span> links. A avaliação média foi de <span class="highlight-value">7,6/10</span>.'
+                },
+                'mai-2025': {
+                    title: 'Resumo da Edição - Maio/2025',
+                    text: 'A newsletter de Maio/2025 teve uma taxa de abertura de <span class="highlight-value">49,1%</span>, com <span class="highlight-value">131</span> cliques distribuídos entre <span class="highlight-value">22</span> links. A avaliação média foi de <span class="highlight-value">7,6/10</span>, com <span class="highlight-value">41,2%</span> dos usuários dando nota 10.'
+                }
+            };
+            
+            // Adicionar resumos vazios para os meses futuros
+            ['jun-2025', 'jul-2025', 'ago-2025', 'set-2025', 'out-2025', 'nov-2025', 'dez-2025'].forEach(month => {
+                summaryData[month] = {
+                    title: `Resumo da Edição - ${month.charAt(0).toUpperCase() + month.slice(1).replace('-', '/')}`,
+                    text: 'Dados ainda não disponíveis para esta edição.'
+                };
+            });
+            
+            // Atualizar o resumo no DOM
+            if (summaryData[edition]) {
+                document.querySelector('.summary-title').textContent = summaryData[edition].title;
+                document.querySelector('.summary-card p').innerHTML = summaryData[edition].text;
+            }
+        }
+
+        // Inicializar os gráficos com os dados da primeira edição
+        window.onload = function() {
+            const ctx1 = document.getElementById('interactionsChart').getContext('2d');
+            const ctx2 = document.getElementById('ratingChart').getContext('2d');
+            const ctx3 = document.getElementById('conversionChart').getContext('2d');
+            const ctx4 = document.getElementById('categoryChart').getContext('2d');
+            const ctx5 = document.getElementById('engagementTrendChart').getContext('2d');
+            
+            interactionsChart = new Chart(ctx1, {
+                type: 'doughnut',
+                data: interactionsData['mai-2025'],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de notas do termômetro
+            ratingChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+                    datasets: [{
+                        label: 'Número de Avaliações',
+                        data: [3, 2, 1, 0, 1, 2, 3, 5, 3, 14],
+                        backgroundColor: '#9b59b6',
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de conversão do feedback
+            conversionChart = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: ['Cliques', 'Formulários', 'Comentários'],
+                    datasets: [{
+                        label: 'Usuários',
+                        data: [34, 9, 3],
+                        backgroundColor: ['#3498db', '#2ecc71', '#9b59b6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de categorias de conteúdo
+            categoryChart = new Chart(ctx4, {
+                type: 'pie',
+                data: {
+                    labels: ['Eventos', 'Tecnologia', 'Tendências', 'Outros'],
+                    datasets: [{
+                        data: [33, 20, 12, 66],
+                        backgroundColor: ['#3498db', '#2ecc71', '#9b59b6', '#e74c3c']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de tendência de engajamento
+            engagementTrendChart = new Chart(ctx5, {
+                type: 'line',
+                data: engagementTrendData['all'],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Percentual (%)'
+                            }
+                        },
+                        y1: {
+                            beginAtZero: true,
+                            position: 'right',
+                            max: 10,
+                            title: {
+                                display: true,
+                                text: 'Nota (1-10)'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Adicionar evento de mudança para o seletor de edições
+            document.getElementById('edition-selector').addEventListener('change', function(e) {

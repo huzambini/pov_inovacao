@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Newsletter de Inovação</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #41A017;
+            --secondary: #16a34a;
+            --background: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --light-text: #64748b;
+            --border: #e2e8f0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            padding: 24px;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        
+        header {
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+        
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: var(--light-text);
+            font-size: 14px;
+        }
+
+        .month-selector {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background-color: var(--card);
+            color: var(--text);
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .month-selector:hover {
+            border-color: var(--primary);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .card {
+            background-color: var(--card);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .card:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-card {
+            margin-bottom: 24px;
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .summary-card h2 {
+            color: white;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .summary-content {
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .metric-card {
+            text-align: left;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: var(--light-text);
+            margin-bottom: 8px;
+        }
+        
+        .metric-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        
+        .metric-trend {
+            font-size: 14px;
+            color: var(--secondary);
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 16px;
+        }
+        
+        .links-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        
+        .links-table th,
+        .links-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .links-table th {
+            font-weight: 500;
+            color: var(--light-text);
+        }
+        
+        .links-table td {
+            font-size: 14px;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .rating-distribution {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .rating-label {
+            width: 30px;
+            font-size: 14px;
+        }
+        
+        .rating-bar {
+            flex-grow: 1;
+            height: 24px;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            margin: 0 8px;
+            overflow: hidden;
+        }
+        
+        .rating-bar-fill {
+            height: 100%;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+        
+        .rating-count {
+            width: 30px;
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .insights-list {
+            list-style: none;
+        }
+
+        .insights-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .insights-list li:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .insight-icon {
+            width: 24px;
+            height: 24px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .insight-content {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .insight-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .insight-description {
+            color: var(--light-text);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <h1>Dashboard Newsletter de Inovação</h1>
+                <p class="subtitle">Acompanhamento mensal dos resultados</p>
+            </div>
+            <select class="month-selector" id="monthSelector">
+                <option value="5">Maio 2025</option>
+                <option value="6">Junho 2025</option>
+                <option value="7">Julho 2025</option>
+                <option value="8">Agosto 2025</option>
+                <option value="9">Setembro 2025</option>
+                <option value="10">Outubro 2025</option>
+                <option value="11">Novembro 2025</option>
+                <option value="12">Dezembro 2025</option>
+            </select>
+        </header>
+
+        <div class="card summary-card">
+            <h2>Resumo da Edição - Maio 2025</h2>
+            <div class="summary-content">
+                A newsletter de maio alcançou resultados significativos, com uma taxa de abertura de 49,1% - quase metade dos destinatários engajaram com o conteúdo. O link mais popular foi o acesso às fotos do evento, demonstrando forte interesse do time em conteúdo visual e eventos internos. A avaliação média foi positiva, com 41% das avaliações sendo nota 10, indicando alta satisfação com o conteúdo.
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card metric-card">
+                <div class="metric-label">Total de E-mails</div>
+                <div class="metric-value">2.122</div>
+            </div>
+            
+            <div class="card metric-card">
+                <div class="metric-label">Total de Aberturas</div>
+                <div class="metric-value">1.042</div>
+                <div class="metric-trend">49,1% de taxa de abertura</div>
+            </div>
+            
+            <div class="card metric-card">
+                <div class="metric-label">Total de Cliques</div>
+                <div class="metric-value">131</div>
+                <div class="metric-trend">6,17% de taxa de cliques</div>
+            </div>
+            
+            <div class="card metric-card">
+                <div class="metric-label">Nota Média</div>
+                <div class="metric-value">7.8</div>
+                <div class="metric-trend">34 avaliações recebidas</div>
+            </div>
+        </div>
+
+        <div class="grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="card" style="height: 100%;">
+                <h2 class="card-title">Links Mais Clicados</h2>
+                <table class="links-table">
+                    <thead>
+                        <tr>
+                            <th>Link</th>
+                            <th>Cliques</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Fotos do Evento</td>
+                            <td>26</td>
+                        </tr>
+                        <tr>
+                            <td>Color Changing Paint (Fast Company)</td>
+                            <td>11</td>
+                        </tr>
+                        <tr>
+                            <td>SXSW 2025 Relatórios</td>
+                            <td>7</td>
+                        </tr>
+                        <tr>
+                            <td>Celulares na Educação (CNN)</td>
+                            <td>6</td>
+                        </tr>
+                        <tr>
+                            <td>Shein e Temu (The Verge)</td>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <td>Frontiers of Computing (Wired)</td>
+                            <td>4</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card" style="height: 100%;">
+                <h2 class="card-title">Distribuição das Avaliações</h2>
+                <div id="ratings-container">
+                    <!-- Ratings will be populated by JavaScript -->
+                </div>
+                <div style="margin-top: 16px; font-size: 14px; color: var(--light-text);">
+                    <p>• 34 pessoas clicaram para avaliar</p>
+                    <p>• 9 pessoas preencheram o formulário</p>
+                    <p>• 3 pessoas deixaram comentários</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Insights Principais</h2>
+            <ul class="insights-list">
+                <li>
+                    <div class="insight-icon">📈</div>
+                    <div class="insight-content">
+                        <div class="insight-title">Alta Taxa de Engajamento</div>
+                        <div class="insight-description">A taxa de abertura de 49,1% está bem acima da média do mercado, indicando forte interesse do time no conteúdo da newsletter.</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="insight-icon">🎯</div>
+                    <div class="insight-content">
+                        <div class="insight-title">Preferência por Conteúdo Visual</div>
+                        <div class="insight-description">O link mais clicado foi o de fotos do evento (26 cliques), sugerindo que conteúdos visuais e relacionados a eventos internos geram maior engajamento.</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="insight-icon">⭐</div>
+                    <div class="insight-content">
+                        <div class="insight-title">Avaliação Positiva</div>
+                        <div class="insight-description">41% das avaliações foram nota 10, demonstrando alta satisfação com o conteúdo. No entanto, existe oportunidade de melhorar a taxa de resposta do formulário de feedback.</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Evolução das Métricas</h2>
+            <div class="chart-container">
+                <canvas id="metricsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados das avaliações
+        const ratings = [
+            { score: 10, count: 14 },
+            { score: 9, count: 3 },
+            { score: 8, count: 5 },
+            { score: 7, count: 3 },
+            { score: 6, count: 2 },
+            { score: 5, count: 1 },
+            { score: 4, count: 0 },
+            { score: 3, count: 1 },
+            { score: 2, count: 2 },
+            { score: 1, count: 3 }
+        ];
+
+        // Encontrar o maior número de votos para calcular as porcentagens
+        const maxVotes = Math.max(...ratings.map(r => r.count));
+
+        // Criar as barras de avaliação
+        const container = document.getElementById('ratings-container');
+        ratings.reverse().forEach(rating => {
+            const ratingDiv = document.createElement('div');
+            ratingDiv.className = 'rating-distribution';
+            
+            const percentage = (rating.count / maxVotes) * 100;
+            
+            ratingDiv.innerHTML = `
+                <div class="rating-label">${rating.score}</div>
+                <div class="rating-bar">
+                    <div class="rating-bar-fill" style="width: ${percentage}%"></div>
+                </div>
+                <div class="rating-count">${rating.count}</div>
+            `;
+            
+            container.appendChild(ratingDiv);
+        });
+
+        // Dados para o gráfico de evolução
+        const months = ['Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const openRates = [49.1, null, null, null, null, null, null, null];
+        const clickRates = [6.17, null, null, null, null, null, null, null];
+
+        // Criar o gráfico de evolução
+        const ctx = document.getElementById('metricsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Taxa de Abertura (%)',
+                        data: openRates,
+                        borderColor: '#41A017',
+                        backgroundColor: 'rgba(65, 160, 23, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Taxa de Cliques (%)',
+                        data: clickRates,
+                        borderColor: '#16a34a',
+                        backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Porcentagem (%)'
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        });
+
+        // Adicionar evento de mudança do mês
+        document.getElementById('monthSelector').addEventListener('change', function(e) {
+            // Por enquanto, só temos dados de maio
+            if (e.target.value !== '5') {
+                alert('Dados ainda não disponíveis para este mês.');
+                e.target.value = '5';
+            }
+        });
+    </script>
+</body>
+</html> 
