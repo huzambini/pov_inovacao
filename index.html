@@ -249,15 +249,17 @@
                 <h1>Dashboard Newsletter de Inovação</h1>
                 <p class="subtitle">Acompanhamento mensal dos resultados</p>
             </div>
-            <select class="month-selector" id="monthSelector">
-                <option value="5">Maio 2025</option>
-                <option value="6">Junho 2025</option>
-                <option value="7">Julho 2025</option>
-                <option value="8">Agosto 2025</option>
-                <option value="9">Setembro 2025</option>
-                <option value="10">Outubro 2025</option>
-                <option value="11">Novembro 2025</option>
-                <option value="12">Dezembro 2025</option>
+            <select id="edition-selector">
+                <option value="all">Todas as edições</option>
+                <option value="mai-2025" selected>Maio/2025</option>
+                <option value="mai-2025-especial">Maio/2025 - Edição Especial</option>
+                <option value="jun-2025">Junho/2025</option>
+                <option value="jul-2025">Julho/2025</option>
+                <option value="ago-2025">Agosto/2025</option>
+                <option value="set-2025">Setembro/2025</option>
+                <option value="out-2025">Outubro/2025</option>
+                <option value="nov-2025">Novembro/2025</option>
+                <option value="dez-2025">Dezembro/2025</option>
             </select>
         </header>
 
@@ -390,9 +392,9 @@
 
     <script>
         // Dados para o gráfico de evolução
-        const months = ['Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-        const openRates = [56.0, null, null, null, null, null, null, null];
-        const clickRates = [7.2, null, null, null, null, null, null, null];
+        const months = ['Mai', 'Mai*', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const openRates = [56.0, 44.4, null, null, null, null, null, null, null];
+        const clickRates = [7.2, 3.1, null, null, null, null, null, null, null];
 
         // Criar o gráfico de evolução
         const ctx = document.getElementById('metricsChart').getContext('2d');
@@ -447,13 +449,244 @@
         });
 
         // Adicionar evento de mudança do mês
-        document.getElementById('monthSelector').addEventListener('change', function(e) {
-            // Por enquanto, só temos dados de maio
-            if (e.target.value !== '5') {
-                alert('Dados ainda não disponíveis para este mês.');
-                e.target.value = '5';
+        document.getElementById('edition-selector').addEventListener('change', function(e) {
+            const selectedEdition = e.target.value;
+            
+            // Atualizar o resumo
+            const summaryCard = document.querySelector('.summary-card');
+            const summaryTitle = summaryCard.querySelector('h2');
+            const summaryContent = summaryCard.querySelector('.summary-content');
+            
+            if (selectedEdition === 'mai-2025-especial') {
+                summaryTitle.textContent = 'Resumo da Edição Especial - Maio 2025';
+                summaryContent.innerHTML = 'A edição especial de maio, enviada em 30/05 às 9:15, alcançou uma taxa de abertura de <span class="highlight-value">44,4%</span> (924 aberturas únicas de 2.080 envios). O link do report do time de inovação recebeu <span class="highlight-value">65</span> cliques únicos, demonstrando forte interesse do time em acompanhar os resultados. A edição especial não incluiu avaliação do conteúdo.';
+                
+                // Atualizar métricas
+                document.querySelector('.metric-card:nth-child(1) .metric-value').textContent = '2.080';
+                document.querySelector('.metric-card:nth-child(2) .metric-value').textContent = '924';
+                document.querySelector('.metric-card:nth-child(2) .metric-trend').textContent = '44,4% de taxa de abertura';
+                document.querySelector('.metric-card:nth-child(3) .metric-value').textContent = '65';
+                document.querySelector('.metric-card:nth-child(3) .metric-trend').textContent = '3,1% de taxa de cliques';
+                document.querySelector('.metric-card:nth-child(4) .metric-value').textContent = '-';
+                document.querySelector('.metric-card:nth-child(4) .metric-trend').textContent = 'Sem avaliações';
+                
+                // Atualizar tabela de links
+                const linksTable = document.querySelector('.links-table tbody');
+                linksTable.innerHTML = `
+                    <tr>
+                        <td>Report do Time de Inovação</td>
+                        <td>65</td>
+                    </tr>
+                `;
+                
+                // Atualizar seção de feedback
+                const feedbackSection = document.querySelector('.card:nth-child(2) .card:nth-child(2)');
+                feedbackSection.innerHTML = `
+                    <h2 class="card-title">Feedback Verbal</h2>
+                    <div style="margin-top: 16px; font-size: 14px; color: var(--light-text);">
+                        <p>Esta edição não incluiu avaliação do conteúdo.</p>
+                    </div>
+                `;
+                
+                // Atualizar insights
+                const insightsList = document.querySelector('.insights-list');
+                insightsList.innerHTML = `
+                    <li>
+                        <div class="insight-icon">📊</div>
+                        <div class="insight-content">
+                            <div class="insight-title">Engajamento com o Report</div>
+                            <div class="insight-description">A edição especial teve 65 cliques únicos no link do report, demonstrando forte interesse do time em acompanhar os resultados do time de inovação.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="insight-icon">📈</div>
+                        <div class="insight-content">
+                            <div class="insight-title">Taxa de Abertura Relevante</div>
+                            <div class="insight-description">A taxa de abertura de 44,4% para uma edição especial é um resultado positivo, indicando que o time mantém interesse mesmo em comunicações extras.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="insight-icon">🎯</div>
+                        <div class="insight-content">
+                            <div class="insight-title">Foco em Resultados</div>
+                            <div class="insight-description">O alto número de cliques (65) em um único link demonstra que o time valoriza o acesso a informações sobre resultados e métricas de inovação.</div>
+                        </div>
+                    </li>
+                `;
+            } else if (selectedEdition === 'mai-2025') {
+                // Restaurar dados da edição regular de maio
+                summaryTitle.textContent = 'Resumo da Edição - Maio 2025';
+                summaryContent.innerHTML = 'A newsletter de maio alcançou resultados significativos, com uma taxa de abertura de 56,0% - mais da metade dos destinatários engajaram com o conteúdo. O link mais popular foi o acesso às fotos do evento, com 35 cliques, demonstrando forte interesse do time em conteúdo visual e eventos internos. A avaliação média foi extremamente positiva, com 80% das avaliações sendo nota 10, indicando alta satisfação com o conteúdo. Dos 39 cliques no termômetro de avaliação, 10 pessoas preencheram o formulário, demonstrando engajamento qualitativo com o conteúdo.';
+                
+                // Restaurar métricas
+                document.querySelector('.metric-card:nth-child(1) .metric-value').textContent = '2.122';
+                document.querySelector('.metric-card:nth-child(2) .metric-value').textContent = '1.189';
+                document.querySelector('.metric-card:nth-child(2) .metric-trend').textContent = '56,0% de taxa de abertura';
+                document.querySelector('.metric-card:nth-child(3) .metric-value').textContent = '152';
+                document.querySelector('.metric-card:nth-child(3) .metric-trend').textContent = '7,2% de taxa de cliques';
+                document.querySelector('.metric-card:nth-child(4) .metric-value').textContent = '9.8';
+                document.querySelector('.metric-card:nth-child(4) .metric-trend').textContent = '10 avaliações recebidas';
+                
+                // Restaurar tabela de links
+                const linksTable = document.querySelector('.links-table tbody');
+                linksTable.innerHTML = `
+                    <tr>
+                        <td>Fotos do Evento</td>
+                        <td>35</td>
+                    </tr>
+                    <tr>
+                        <td>Color Changing Paint (Fast Company)</td>
+                        <td>11</td>
+                    </tr>
+                    <tr>
+                        <td>SXSW 2025 Relatórios</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td>Celulares na Educação (CNN)</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td>Shein e Temu (The Verge)</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>Frontiers of Computing (Wired)</td>
+                        <td>4</td>
+                    </tr>
+                `;
+                
+                // Restaurar seção de feedback
+                const feedbackSection = document.querySelector('.card:nth-child(2) .card:nth-child(2)');
+                feedbackSection.innerHTML = `
+                    <h2 class="card-title">Feedback Verbal</h2>
+                    <div style="margin-top: 16px; font-size: 14px; color: var(--light-text);">
+                        <p style="margin-bottom: 16px;">• 39 pessoas clicaram para avaliar</p>
+                        <p style="margin-bottom: 16px;">• 10 pessoas preencheram o formulário</p>
+                        <p style="margin-bottom: 16px;">• 3 pessoas deixaram comentários:</p>
+                    </div>
+                    <div style="margin-top: 16px; font-size: 14px;">
+                        <div style="background-color: var(--background); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                            <p style="color: var(--text); font-style: italic;">"Excelente trabalho, vocês nos ajudam a nos manter informados em meio a nossa correria diária."</p>
+                        </div>
+                        <div style="background-color: var(--background); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                            <p style="color: var(--text); font-style: italic;">"Vocês conseguem compartilhar os slides que foram apresentados no café? Obrigada!"</p>
+                        </div>
+                        <div style="background-color: var(--background); padding: 16px; border-radius: 8px;">
+                            <p style="color: var(--text); font-style: italic;">"Mais assuntos e artigos sobre rede sociais e IA"</p>
+                        </div>
+                    </div>
+                `;
+                
+                // Restaurar insights
+                const insightsList = document.querySelector('.insights-list');
+                insightsList.innerHTML = `
+                    <li>
+                        <div class="insight-icon">📈</div>
+                        <div class="insight-content">
+                            <div class="insight-title">Alta Taxa de Engajamento</div>
+                            <div class="insight-description">A taxa de abertura de 56,0% está bem acima da média do mercado, indicando forte interesse do time no conteúdo da newsletter.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="insight-icon">🎯</div>
+                        <div class="insight-content">
+                            <div class="insight-title">Preferência por Conteúdo Visual</div>
+                            <div class="insight-description">O link mais clicado foi o de fotos do evento (35 cliques), sugerindo que conteúdos visuais e relacionados a eventos internos geram maior engajamento.</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="insight-icon">⭐</div>
+                        <div class="insight-content">
+                            <div class="insight-title">Avaliação Positiva</div>
+                            <div class="insight-description">48,7% das avaliações foram nota 10, demonstrando alta satisfação com o conteúdo. No entanto, existe oportunidade de melhorar a taxa de resposta do formulário de feedback.</div>
+                        </div>
+                    </li>
+                `;
             }
         });
+
+        const engagementTrendData = {
+            'all': {
+                labels: months,
+                datasets: [
+                    {
+                        label: 'Taxa de Abertura (%)',
+                        data: [49.1, 40.3, 0, 0, 0, 0, 0, 0, 0],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Taxa de Cliques (%)',
+                        data: [6.2, 2.6, 0, 0, 0, 0, 0, 0, 0],
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Nota Média',
+                        data: [7.6, 0, 0, 0, 0, 0, 0, 0, 0],
+                        borderColor: '#9b59b6',
+                        backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            'mai-2025-especial': {
+                labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
+                datasets: [
+                    {
+                        label: 'Taxa de Abertura (%)',
+                        data: [40.3, 0, 0, 0],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Taxa de Cliques (%)',
+                        data: [2.6, 0, 0, 0],
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+        };
+
+        const interactionsData = {
+            'all': {
+                labels: ['Apenas Aberturas', 'Cliques em Links', 'Avaliações', 'Sem Interação'],
+                datasets: [{
+                    data: [877, 131, 34, 1080],
+                    backgroundColor: ['#3498db', '#2ecc71', '#9b59b6', '#e0e0e0']
+                }]
+            },
+            'mai-2025-especial': {
+                labels: ['Apenas Aberturas', 'Cliques em Links', 'Sem Interação'],
+                datasets: [{
+                    data: [839, 55, 1186],
+                    backgroundColor: ['#3498db', '#2ecc71', '#e0e0e0']
+                }]
+            },
+        };
+
+        const summaryData = {
+            'all': {
+                title: 'Resumo Geral',
+                text: 'No total, a newsletter teve uma taxa de abertura de <span class="highlight-value">49,1%</span>, com <span class="highlight-value">131</span> cliques distribuídos entre <span class="highlight-value">22</span> links. A avaliação média foi de <span class="highlight-value">7,6/10</span>.'
+            },
+            'mai-2025-especial': {
+                title: 'Resumo da Edição Especial - Maio/2025',
+                text: 'A edição especial de Maio/2025 teve uma taxa de abertura de <span class="highlight-value">40,3%</span> (839 aberturas únicas de 2.080 envios), com <span class="highlight-value">55</span> cliques únicos no link do report do time de inovação. Houve <span class="highlight-value">1</span> unsubscribe.'
+            },
+        };
     </script>
 </body>
 </html> 
