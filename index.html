@@ -391,10 +391,17 @@
     </div>
 
     <script>
+        // Teste inicial para verificar se o JavaScript está funcionando
+        console.log('JavaScript carregado!');
+        
+        // Verificar se o elemento existe
+        const editionSelector = document.getElementById('edition-selector');
+        console.log('Elemento encontrado:', editionSelector);
+        
         // Dados para o gráfico de evolução
         const months = ['Mai', 'Mai*', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-        const openRates = [56.0, 44.4, null, null, null, null, null, null, null];
-        const clickRates = [7.2, 3.1, null, null, null, null, null, null, null];
+        const openRates = [56.0, 44.4, 44.0, null, null, null, null, null, null];
+        const clickRates = [7.2, 3.1, 4.4, null, null, null, null, null, null];
 
         // Criar o gráfico de evolução
         const ctx = document.getElementById('metricsChart').getContext('2d');
@@ -451,13 +458,35 @@
         // Adicionar evento de mudança do mês
         document.getElementById('edition-selector').addEventListener('change', function(e) {
             const selectedEdition = e.target.value;
+            console.log('Edição selecionada:', selectedEdition); // Debug
             
             // Atualizar o resumo
             const summaryCard = document.querySelector('.summary-card');
             const summaryTitle = summaryCard.querySelector('h2');
             const summaryContent = summaryCard.querySelector('.summary-content');
             
+            console.log('Elementos encontrados:', {
+                summaryCard: summaryCard,
+                summaryTitle: summaryTitle,
+                summaryContent: summaryContent
+            });
+            
             if (selectedEdition === 'mai-2025-especial') {
+                console.log('Aplicando dados da edição especial'); // Debug
+                
+                // Testar se os elementos estão sendo encontrados
+                const metricCards = document.querySelectorAll('.metric-card');
+                console.log('Métricas encontradas:', metricCards.length);
+                
+                const linksTable = document.querySelector('.links-table tbody');
+                console.log('Tabela de links encontrada:', linksTable);
+                
+                const feedbackSection = document.querySelector('.grid[style*="grid-template-columns"] .card:nth-child(2)');
+                console.log('Seção de feedback encontrada:', feedbackSection);
+                
+                const insightsList = document.querySelector('.insights-list');
+                console.log('Lista de insights encontrada:', insightsList);
+                
                 summaryTitle.textContent = 'Resumo da Edição Especial - Maio 2025';
                 summaryContent.innerHTML = 'A edição especial de maio, enviada em 30/05 às 9:15, alcançou uma taxa de abertura de <span class="highlight-value">44,4%</span> (924 aberturas únicas de 2.080 envios). O link do report do time de inovação recebeu <span class="highlight-value">65</span> cliques únicos, demonstrando forte interesse do time em acompanhar os resultados. A edição especial não incluiu avaliação do conteúdo.';
                 
@@ -471,7 +500,6 @@
                 document.querySelector('.metric-card:nth-child(4) .metric-trend').textContent = 'Sem avaliações';
                 
                 // Atualizar tabela de links
-                const linksTable = document.querySelector('.links-table tbody');
                 linksTable.innerHTML = `
                     <tr>
                         <td>Report do Time de Inovação</td>
@@ -479,40 +507,47 @@
                     </tr>
                 `;
                 
-                // Atualizar seção de feedback
-                const feedbackSection = document.querySelector('.card:nth-child(2) .card:nth-child(2)');
-                feedbackSection.innerHTML = `
-                    <h2 class="card-title">Feedback Verbal</h2>
-                    <div style="margin-top: 16px; font-size: 14px; color: var(--light-text);">
-                        <p>Esta edição não incluiu avaliação do conteúdo.</p>
-                    </div>
-                `;
+                // Atualizar seção de feedback - ESVAZIAR COMPLETAMENTE
+                if (feedbackSection) {
+                    feedbackSection.innerHTML = `
+                        <h2 class="card-title">Feedback Verbal</h2>
+                        <div style="margin-top: 16px; font-size: 14px; color: var(--light-text);">
+                        </div>
+                    `;
+                } else {
+                    console.error('Seção de feedback não encontrada');
+                }
                 
-                // Atualizar insights
-                const insightsList = document.querySelector('.insights-list');
-                insightsList.innerHTML = `
-                    <li>
-                        <div class="insight-icon">📊</div>
-                        <div class="insight-content">
-                            <div class="insight-title">Engajamento com o Report</div>
-                            <div class="insight-description">A edição especial teve 65 cliques únicos no link do report, demonstrando forte interesse do time em acompanhar os resultados do time de inovação.</div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="insight-icon">📈</div>
-                        <div class="insight-content">
-                            <div class="insight-title">Taxa de Abertura Relevante</div>
-                            <div class="insight-description">A taxa de abertura de 44,4% para uma edição especial é um resultado positivo, indicando que o time mantém interesse mesmo em comunicações extras.</div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="insight-icon">🎯</div>
-                        <div class="insight-content">
-                            <div class="insight-title">Foco em Resultados</div>
-                            <div class="insight-description">O alto número de cliques (65) em um único link demonstra que o time valoriza o acesso a informações sobre resultados e métricas de inovação.</div>
-                        </div>
-                    </li>
-                `;
+                // Atualizar insights - NOVOS INSIGHTS ESPECÍFICOS
+                if (insightsList) {
+                    insightsList.innerHTML = `
+                        <li>
+                            <div class="insight-icon">📊</div>
+                            <div class="insight-content">
+                                <div class="insight-title">Engajamento com o Report</div>
+                                <div class="insight-description">A edição especial teve 65 cliques únicos no link do report, demonstrando forte interesse do time em acompanhar os resultados do time de inovação.</div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="insight-icon">📈</div>
+                            <div class="insight-content">
+                                <div class="insight-title">Taxa de Abertura Relevante</div>
+                                <div class="insight-description">A taxa de abertura de 44,4% para uma edição especial é um resultado positivo, indicando que o time mantém interesse mesmo em comunicações extras.</div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="insight-icon">🎯</div>
+                            <div class="insight-content">
+                                <div class="insight-title">Foco em Resultados</div>
+                                <div class="insight-description">O alto número de cliques (65) em um único link demonstra que o time valoriza o acesso a informações sobre resultados e métricas de inovação.</div>
+                            </div>
+                        </li>
+                    `;
+                } else {
+                    console.error('Lista de insights não encontrada');
+                }
+                
+                console.log('Dados da edição especial aplicados com sucesso!');
             } else if (selectedEdition === 'mai-2025') {
                 // Restaurar dados da edição regular de maio
                 summaryTitle.textContent = 'Resumo da Edição - Maio 2025';
@@ -557,52 +592,150 @@
                 `;
                 
                 // Restaurar seção de feedback
-                const feedbackSection = document.querySelector('.card:nth-child(2) .card:nth-child(2)');
-                feedbackSection.innerHTML = `
-                    <h2 class="card-title">Feedback Verbal</h2>
-                    <div style="margin-top: 16px; font-size: 14px; color: var(--light-text);">
-                        <p style="margin-bottom: 16px;">• 39 pessoas clicaram para avaliar</p>
-                        <p style="margin-bottom: 16px;">• 10 pessoas preencheram o formulário</p>
-                        <p style="margin-bottom: 16px;">• 3 pessoas deixaram comentários:</p>
-                    </div>
-                    <div style="margin-top: 16px; font-size: 14px;">
-                        <div style="background-color: var(--background); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
-                            <p style="color: var(--text); font-style: italic;">"Excelente trabalho, vocês nos ajudam a nos manter informados em meio a nossa correria diária."</p>
+                const feedbackSection = document.querySelector('.grid[style*="grid-template-columns"] .card:nth-child(2)');
+                if (feedbackSection) {
+                    feedbackSection.innerHTML = `
+                        <h2 class="card-title">Feedback Verbal</h2>
+                        <div style="margin-top: 16px; font-size: 14px; color: var(--light-text);">
+                            <p style="margin-bottom: 16px;">• 39 pessoas clicaram para avaliar</p>
+                            <p style="margin-bottom: 16px;">• 10 pessoas preencheram o formulário</p>
+                            <p style="margin-bottom: 16px;">• 3 pessoas deixaram comentários:</p>
                         </div>
-                        <div style="background-color: var(--background); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
-                            <p style="color: var(--text); font-style: italic;">"Vocês conseguem compartilhar os slides que foram apresentados no café? Obrigada!"</p>
+                        <div style="margin-top: 16px; font-size: 14px;">
+                            <div style="background-color: var(--background); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                                <p style="color: var(--text); font-style: italic;">"Excelente trabalho, vocês nos ajudam a nos manter informados em meio a nossa correria diária."</p>
+                            </div>
+                            <div style="background-color: var(--background); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                                <p style="color: var(--text); font-style: italic;">"Vocês conseguem compartilhar os slides que foram apresentados no café? Obrigada!"</p>
+                            </div>
+                            <div style="background-color: var(--background); padding: 16px; border-radius: 8px;">
+                                <p style="color: var(--text); font-style: italic;">"Mais assuntos e artigos sobre rede sociais e IA"</p>
+                            </div>
                         </div>
-                        <div style="background-color: var(--background); padding: 16px; border-radius: 8px;">
-                            <p style="color: var(--text); font-style: italic;">"Mais assuntos e artigos sobre rede sociais e IA"</p>
-                        </div>
-                    </div>
-                `;
+                    `;
+                }
                 
                 // Restaurar insights
                 const insightsList = document.querySelector('.insights-list');
-                insightsList.innerHTML = `
-                    <li>
-                        <div class="insight-icon">📈</div>
-                        <div class="insight-content">
-                            <div class="insight-title">Alta Taxa de Engajamento</div>
-                            <div class="insight-description">A taxa de abertura de 56,0% está bem acima da média do mercado, indicando forte interesse do time no conteúdo da newsletter.</div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="insight-icon">🎯</div>
-                        <div class="insight-content">
-                            <div class="insight-title">Preferência por Conteúdo Visual</div>
-                            <div class="insight-description">O link mais clicado foi o de fotos do evento (35 cliques), sugerindo que conteúdos visuais e relacionados a eventos internos geram maior engajamento.</div>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="insight-icon">⭐</div>
-                        <div class="insight-content">
-                            <div class="insight-title">Avaliação Positiva</div>
-                            <div class="insight-description">48,7% das avaliações foram nota 10, demonstrando alta satisfação com o conteúdo. No entanto, existe oportunidade de melhorar a taxa de resposta do formulário de feedback.</div>
-                        </div>
-                    </li>
+                if (insightsList) {
+                    insightsList.innerHTML = `
+                        <li>
+                            <div class="insight-icon">📈</div>
+                            <div class="insight-content">
+                                <div class="insight-title">Alta Taxa de Engajamento</div>
+                                <div class="insight-description">A taxa de abertura de 56,0% está bem acima da média do mercado, indicando forte interesse do time no conteúdo da newsletter.</div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="insight-icon">🎯</div>
+                            <div class="insight-content">
+                                <div class="insight-title">Preferência por Conteúdo Visual</div>
+                                <div class="insight-description">O link mais clicado foi o de fotos do evento (35 cliques), sugerindo que conteúdos visuais e relacionados a eventos internos geram maior engajamento.</div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="insight-icon">⭐</div>
+                            <div class="insight-content">
+                                <div class="insight-title">Avaliação Positiva</div>
+                                <div class="insight-description">48,7% das avaliações foram nota 10, demonstrando alta satisfação com o conteúdo. No entanto, existe oportunidade de melhorar a taxa de resposta do formulário de feedback.</div>
+                            </div>
+                        </li>
+                    `;
+                }
+            } else if (selectedEdition === 'jun-2025') {
+                // Dados da edição de junho
+                summaryTitle.textContent = 'Resumo da Edição - Junho 2025';
+                summaryContent.innerHTML = 'A newsletter de junho manteve um bom engajamento com uma taxa de abertura de <span class="highlight-value">44,0%</span> (912 aberturas de 2.071 envios). O link mais popular foi o do Podcast da newsletter, com <span class="highlight-value">33</span> cliques, demonstrando forte interesse do time em conteúdo em áudio. A avaliação foi extremamente positiva, com todas as <span class="highlight-value">7</span> avaliações sendo nota 10, indicando alta satisfação com o conteúdo. Dos 7 avaliadores, 3 pessoas deixaram comentários verbais, demonstrando engajamento qualitativo com o conteúdo.';
+                
+                // Atualizar métricas
+                document.querySelector('.metric-card:nth-child(1) .metric-value').textContent = '2.071';
+                document.querySelector('.metric-card:nth-child(2) .metric-value').textContent = '912';
+                document.querySelector('.metric-card:nth-child(2) .metric-trend').textContent = '44,0% de taxa de abertura';
+                document.querySelector('.metric-card:nth-child(3) .metric-value').textContent = '91';
+                document.querySelector('.metric-card:nth-child(3) .metric-trend').textContent = '4,4% de taxa de cliques';
+                document.querySelector('.metric-card:nth-child(4) .metric-value').textContent = '10.0';
+                document.querySelector('.metric-card:nth-child(4) .metric-trend').textContent = '7 avaliações recebidas';
+                
+                // Atualizar tabela de links
+                const linksTable = document.querySelector('.links-table tbody');
+                linksTable.innerHTML = `
+                    <tr>
+                        <td>Podcast da Newsletter</td>
+                        <td>33</td>
+                    </tr>
+                    <tr>
+                        <td>Report</td>
+                        <td>9</td>
+                    </tr>
+                    <tr>
+                        <td>9 Invenções Brasileiras (Canaltech)</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>Podcast Desenrola</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>TED Talk</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>Boticário - Loja Sustentável (Meio & Mensagem)</td>
+                        <td>3</td>
+                    </tr>
                 `;
+                
+                // Atualizar seção de feedback
+                const feedbackSection = document.querySelector('.grid[style*="grid-template-columns"] .card:nth-child(2)');
+                if (feedbackSection) {
+                    feedbackSection.innerHTML = `
+                        <h2 class="card-title">Feedback Verbal</h2>
+                        <div style="margin-top: 16px; font-size: 14px; color: var(--light-text);">
+                            <p style="margin-bottom: 16px;">• 7 pessoas avaliaram</p>
+                            <p style="margin-bottom: 16px;">• 7 pessoas deram nota 10</p>
+                            <p style="margin-bottom: 16px;">• 3 pessoas deixaram comentários:</p>
+                        </div>
+                        <div style="margin-top: 16px; font-size: 14px;">
+                            <div style="background-color: var(--background); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                                <p style="color: var(--text); font-style: italic;">"Muito legal, interativo e temas atuais. Parabéns."</p>
+                            </div>
+                            <div style="background-color: var(--background); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                                <p style="color: var(--text); font-style: italic;">"O tamanho da fonte no meu celular ficou muito pequeninha! Mas ja conversei com o Hugo e dei a dica pra ele, pra aumentar um pouquinho nas proximas ;) O conteúdo está muito bom, li enquanto esperava meu almoço hoje. Parabéns time!!!"</p>
+                            </div>
+                            <div style="background-color: var(--background); padding: 16px; border-radius: 8px;">
+                                <p style="color: var(--text); font-style: italic;">"Muito legal. Parabéns."</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Atualizar insights
+                const insightsList = document.querySelector('.insights-list');
+                if (insightsList) {
+                    insightsList.innerHTML = `
+                        <li>
+                            <div class="insight-icon">🎧</div>
+                            <div class="insight-content">
+                                <div class="insight-title">Sucesso do Conteúdo em Áudio</div>
+                                <div class="insight-description">O podcast da newsletter foi o link mais clicado (33 cliques), demonstrando forte interesse do time em conteúdo em formato de áudio e podcasts.</div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="insight-icon">⭐</div>
+                            <div class="insight-content">
+                                <div class="insight-title">Avaliação Perfeita</div>
+                                <div class="insight-description">100% das avaliações foram nota 10 (7 de 7), indicando excelente satisfação com o conteúdo e formato da newsletter.</div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="insight-icon">📱</div>
+                            <div class="insight-content">
+                                <div class="insight-title">Feedback Construtivo</div>
+                                <div class="insight-description">Um dos comentários mencionou o tamanho da fonte no celular, fornecendo feedback valioso para melhorias na experiência mobile.</div>
+                            </div>
+                        </li>
+                    `;
+                }
             }
         });
 
